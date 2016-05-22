@@ -1,12 +1,10 @@
 import React from 'react'
-import LinkList from '../LinkList';
-import Filters from '../Filters';
+import VerifyForm from '../VerifyForm';
 
 export default () => {
   return (
     <div>
-      <Filters />
-      <LinkList />
+      <VerifyForm />
     </div>
   )
 }
