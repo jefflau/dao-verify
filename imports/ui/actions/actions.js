@@ -1,25 +1,10 @@
-export function addTodo(text){
+export function submitForm(form){
   return () => {
-    Meteor.call('addTodo', text)
+    Meteor.call('submitVerifyForm', form, (err, data) => {
+      if(err) {
+        console.error(err);
+      }
+      console.log(data)
+    })
   }
-}
-
-export function toggleTodo(id) {
-  return () => {
-    Meteor.call('toggleTodo', id);
-  };
-};
-
-export function changePage(currentPageNumber) {
-  return {
-    type: 'CHANGE_PAGE',
-    currentPageNumber
-  };
-};
-
-export function setVisibilityFilter(filter) {
-  return {
-    type: 'SET_VISIBILITY_FILTER',
-    filter
-  };
 }
