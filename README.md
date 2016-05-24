@@ -9,4 +9,4 @@ $ meteor
 
 ##Explanation
 
-An app to verify one is a DAO token holder
+An app to verify one is a DAO token holder. Build with Meteor, React and Redux.
