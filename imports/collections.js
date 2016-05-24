@@ -1,3 +1,3 @@
-const Todos = new Mongo.Collection('todos');
+const Accounts = new Mongo.Collection('accounts');
 
-export default Todos;
+export default Accounts;
