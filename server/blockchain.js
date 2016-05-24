@@ -26,11 +26,12 @@ export function checkDAOAccountExists(account){
         if(tokens === 0) {
           return false
         } else {
-          return tokens
+          return tokens/10000000000000000
         }
       } else {
         return false
       }
     })
+    
   return promise;
 }

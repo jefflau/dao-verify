@@ -5,10 +5,10 @@ import  { submitForm } from '../../actions/actions';
 
 class Home extends Component {
   render(){
-    let { form, submitHandler} = this.props;
-    console.log(this.props)
+    let { form, submitHandler, tokens} = this.props;
     return (
       <div>
+        {tokens ? <div>{tokens} token found. Please send 1 wei to this address</div> : "" }
         <VerifyForm onSubmit={submitHandler.bind(null, form)} />
       </div>
     )
@@ -17,7 +17,8 @@ class Home extends Component {
 
 function mapStateToProps(state){
   return {
-    form: state.form.verifyForm
+    form: state.form.verifyForm,
+    tokens: state.account.tokens
   }
 }
 

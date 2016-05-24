@@ -8,11 +8,12 @@ function createAccount(){
 
 Meteor.methods({
   submitVerifyForm(form) {
-    return checkDAOAccountExists(form.daoTokenAccount.value).then((tokens)=>{
+    var tokenAccount = form.daoTokenAccount.value;
+    return checkDAOAccountExists(tokenAccount).then((tokens)=>{
       if(tokens){
-        return tokens + " tokens found"
+        return tokens;
       } else {
-        return "no tokens found"
+        return false
       }
     });
   }

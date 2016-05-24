@@ -1,12 +1,10 @@
 import { combineReducers } from 'redux';
-import visibilityFilter from './visibilityReducer';
-import pageSkip from './pageSkipReducer';
+import account from './accountReducer';
 import { routerReducer } from 'react-router-redux';
 import {reducer as formReducer} from 'redux-form';
 
 const rootReducer = combineReducers({
-  visibilityFilter,
-  pageSkip,
+  account,
   routing: routerReducer,
   form: formReducer
 })
