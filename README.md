@@ -1,4 +1,4 @@
-# Front-end Links
+# DAO Verify
 
 ##Installation
 
@@ -9,4 +9,4 @@ $ meteor
 
 ##Explanation
 
-Front-end links is a collections of front-end development resources curated by [@_jefflau](http://twitter.com/_jefflau)
+An app to verify one is a DAO token holder
