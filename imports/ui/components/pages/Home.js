@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
-import VerifyForm from '../VerifyForm';
+import { Meteor } from 'meteor/meteor';;
+import { createContainer } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
+
+import { Accounts } from '../../../collections';
+import VerifyForm from '../VerifyForm';
 import  { submitForm } from '../../actions/actions';
 
 class Home extends Component {
   render(){
-    let { form, submitHandler, tokens} = this.props;
+    let { form, submitHandler, tokens, accountMeteor} = this.props;
     return (
       <div>
         {tokens ? <div>{tokens} token found. Please send 1 wei to this address</div> : "" }
@@ -15,19 +19,32 @@ class Home extends Component {
   }
 }
 
+const HomeContainer = createContainer(({ account })=>{
+  const accountSub = Meteor.subscribe('getAccount', account.userId);
+  return {
+    accountSub: accountSub.ready(),
+    accountMeteor: Accounts.find({}).fetch()
+  }
+}, Home);
+
+
 function mapStateToProps(state){
   return {
     form: state.form.verifyForm,
-    tokens: state.account.tokens
+    tokens: state.account.tokens,
+    account: state.account
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
     submitHandler: (form) => {
-      dispatch(submitForm(form))
+      dispatch(submitForm({
+        daoTokenAccount: form.daoTokenAccount.value,
+        daoHubForumUsername: form.daoHubForumUsername.value
+      }))
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home)
+export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer)

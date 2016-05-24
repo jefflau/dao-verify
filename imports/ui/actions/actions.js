@@ -8,12 +8,20 @@ function tokensFound(tokens){
   }
 }
 
+function updateAccount(userData){
+  return {
+    type: 'UPDATE_ACCOUNT',
+    userData
+  }
+}
+
+
 export function submitForm(form){
   return (dispatch) => {
-    callMethodPromise('submitVerifyForm', form).then((tokens)=>{
-      console.log(dispatch)
-      dispatch(tokensFound(tokens))
-      return tokens;
+    callMethodPromise('submitVerifyForm', form).then((data)=>{
+      dispatch(tokensFound(data.tokens))
+      dispatch(updateAccount(data))
+      return data.tokens;
     }).catch((err)=>{
       console.error(err);
     })

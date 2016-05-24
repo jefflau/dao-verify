@@ -1,17 +1,22 @@
-import Todos from '../imports/collections';
+import { Accounts } from '../imports/collections';
 import { checkDAOAccountExists, getCurrentBlock } from './blockchain';
 
-function createAccount(){
+function createAccount(form){
   //getCurrentBlockNumber and add 24, will be the be 'confirmationBy'
-
+  return Accounts.insert(form)
 }
 
 Meteor.methods({
   submitVerifyForm(form) {
-    var tokenAccount = form.daoTokenAccount.value;
+    var tokenAccount = form.daoTokenAccount;
     return checkDAOAccountExists(tokenAccount).then((tokens)=>{
       if(tokens){
-        return tokens;
+        let userId = createAccount(form);
+        return {
+          ...form,
+          tokens,
+          userId
+        };
       } else {
         return false
       }

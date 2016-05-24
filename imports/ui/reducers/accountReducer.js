@@ -1,5 +1,4 @@
 function accountReducer(state = {}, action = {}){
-  console.log('calling account reducer')
   switch(action.type) {
     case 'TOKENS_FOUND':
       console.log(action.type, state)
@@ -8,10 +7,10 @@ function accountReducer(state = {}, action = {}){
         tokens: action.tokens
       }
     case 'UPDATE_ACCOUNT':
-      // return {
-      //   daoTokenAccount: action.daoTokenAccount,
-      //
-      // }
+      return {
+        ...state,
+        ...action.userData
+      }
     default:
       return state;
   }
