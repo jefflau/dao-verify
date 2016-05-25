@@ -1,4 +1,5 @@
 import { HTTP } from 'meteor/http';
+import '../api/methods.js';
 
 export function httpPromise(type, url, params){
   var promise = new Promise(http);

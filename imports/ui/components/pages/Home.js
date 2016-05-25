@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';;
 import { createContainer } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 
-import { Accounts } from '../../../collections';
+import { Accounts } from '../../../api/collections';
 import VerifyForm from '../VerifyForm';
 import  { submitForm } from '../../actions/actions';
 
@@ -21,8 +21,9 @@ class Home extends Component {
 
 const HomeContainer = createContainer(({ account })=>{
   const accountSub = Meteor.subscribe('getAccount', account.userId);
+  const accountLoading = !accountSub.ready();
   return {
-    accountSub: accountSub.ready(),
+    accountLoading,
     accountMeteor: Accounts.find({}).fetch()
   }
 }, Home);

@@ -1,3 +1,6 @@
-import { Accounts } from '../imports/collections';
+import Accounts from '../imports/api/collections/accounts';
+import Verifier from '../imports/startup/server/verifier';
 
-console.log('FindOne', Accounts.findOne({_id: "BxjPX5tQKFPPuJsuj"}));
+var verifier = new Verifier();
+
+verifier.start();
