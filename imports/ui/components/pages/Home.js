@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';;
 import { createContainer } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 
-import { Accounts } from '../../../api/collections';
+import Accounts from '../../../api/collections/accounts';
 import VerifyForm from '../VerifyForm';
 import  { submitForm } from '../../actions/actions';
 

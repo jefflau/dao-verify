@@ -20,13 +20,19 @@ class Verifier {
         verified: 0,
         dateCreated: new Date(),
         lastAccountVerified: null,
-        latestBlock: null
+        latestBlock: null,
+        lastTransactionProcess: null
       })
     });
   }
 
+  verifyAccounts(){
+    console.log(Accounts.find({verified: false}))
+  }
+
   start() {
     console.log('starting verifier');
+    this.verifyAccounts();
   }
 }
 
