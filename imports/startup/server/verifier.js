@@ -27,7 +27,7 @@ class Verifier {
   }
 
   verifyAccounts(){
-    console.log(Accounts.find({verified: false}))
+    console.log('VERIFY ACCOUNTS', Accounts.find({verified: false}).fetch())
   }
 
   start() {

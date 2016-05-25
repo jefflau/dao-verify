@@ -5,15 +5,18 @@ if(Meteor.isServer){
 }
 
 function createAccount(form){
-  //getCurrentBlockNumber and add 24, will be the be 'confirmationBy'
   if(Accounts.find({daoTokenAccount: form.daoTokenAccount}).count() > 0) {
-    console.log('account already exists')
+    throw new Meteor.Error("account-already-registered", "This account already has a DAOhub user associated with it");;
+  }
+
+  if(Accounts.find({daoHubForumUsername: form.daoHubForumUsername}).count() > 0) {
+    throw new Meteor.Error("dao-account-already-registered", "This DAOhub forum username has already been registered");;
   }
 
   return Accounts.insert({
     ...form,
     verified: false
-  })
+  });
 }
 
 Meteor.methods({
@@ -26,13 +29,17 @@ Meteor.methods({
     return checkDAOAccountExists(tokenAccount).then((tokens)=>{
       if(tokens){
         let userId = createAccount(form);
-        return {
-          ...form,
-          tokens,
-          userId
-        };
+
+        if(userId){
+          return {
+            ...form,
+            tokens,
+            userId
+          }
+        }
+
       } else {
-        return false
+        throw new Meteor.Error("no-tokens", "This account has no tokens associated with it");
       }
     });
   }

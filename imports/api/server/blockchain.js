@@ -15,6 +15,8 @@ export function getCurrentBlockNumber(){
         return false
       }
     })
+
+  return blockNumber;
 }
 
 export function checkDAOAccountExists(account){

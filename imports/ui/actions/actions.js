@@ -15,15 +15,29 @@ function updateAccount(userData){
   }
 }
 
+function serverError(error) {
+  return {
+    type: 'SERVER_ERROR',
+    error
+  }
+}
+
+function clearError() {
+  return {
+    type: 'CLEAR_ERROR'
+  }
+}
+
 
 export function submitForm(form){
   return (dispatch) => {
     callMethodPromise('submitVerifyForm', form).then((data)=>{
+      dispatch(clearError())
       dispatch(tokensFound(data.tokens))
       dispatch(updateAccount(data))
       return data.tokens;
     }).catch((err)=>{
-      console.error(err);
+      dispatch(serverError(err));
     })
   }
 }

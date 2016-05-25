@@ -9,9 +9,10 @@ import  { submitForm } from '../../actions/actions';
 
 class Home extends Component {
   render(){
-    let { form, submitHandler, tokens, accountMeteor} = this.props;
+    let { form, submitHandler, tokens, accountMeteor, serverError} = this.props;
     return (
       <div>
+        {serverError.error ? <div>{serverError.error.reason}</div> : "" }
         {tokens ? <div>{tokens} token found. Please send 1 wei to this address</div> : "" }
         <VerifyForm onSubmit={submitHandler.bind(null, form)} />
       </div>
@@ -33,7 +34,8 @@ function mapStateToProps(state){
   return {
     form: state.form.verifyForm,
     tokens: state.account.tokens,
-    account: state.account
+    account: state.account,
+    serverError: state.serverError
   }
 }
 
