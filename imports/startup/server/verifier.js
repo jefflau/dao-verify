@@ -1,6 +1,6 @@
 import Accounts from '../../api/collections/accounts';
 import VerifierConfig from '../../api/collections/verifierConfig';
-import { getCurrentBlockNumber } from '../../api/server/blockchain';
+import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
 
 class Verifier {
   constructor(){
@@ -28,6 +28,7 @@ class Verifier {
 
   verifyAccounts(){
     console.log('VERIFY ACCOUNTS', Accounts.find({verified: false}).fetch())
+    getControlAccountTransactions().then(txs => console.log('CONTROL TXS', txs))
   }
 
   start() {
