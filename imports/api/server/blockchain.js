@@ -10,7 +10,7 @@ export function getCurrentBlockNumber(){
     action: "eth_blockNumber",
     apikey: "YourApiKeyToken"
   }).then((res)=>{
-      if(res.data.status === "1") {
+      if(res.statusCode === 200) {
         return parseInt(res.data.result, 16)
       } else {
         return false
@@ -34,7 +34,7 @@ function getAccountTransactions(account){
         throw new Meteor.Error("api-call-failed", "api call failed")
       }
     }).catch(err => console.error(err.reason))
-    
+
   return transactionsPromise;
 }
 
