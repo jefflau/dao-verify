@@ -47,7 +47,8 @@ class Verifier {
       getControlAccountTransactions(),
       getCurrentBlockNumber()
     ]).then(values => {
-      let accounts = Accounts.find({verified: false, invalid: false}).fetch();
+      let allAccounts = Accounts.find({}).fetch();
+      let accounts = Accounts.find({verified: false, expired: false}).fetch();
       let txs = values[0];
       let currentBlockNumber = values[1];
 
@@ -56,28 +57,31 @@ class Verifier {
 
       let expiredAccounts = [];
       let unexpiredAccounts = [];
-
-      console.log("accounts", accounts)
+      console.log("ALL ACCOUNTS", allAccounts);
+      console.log("accounts", accounts);
 
       accounts.forEach((account)=>{
         if(account.expiryBlock > currentBlockNumber) {
-          unexpiredAccounts.push(account);
-        } else {
           expiredAccounts.push(account)
+        } else {
+          unexpiredAccounts.push(account);
         }
       });
 
       console.log("EXPIRED ACCOUNTS", expiredAccounts)
-      console.log("UNEXPIRED ACCOUNTS", expiredAccounts)
+      console.log("UNEXPIRED ACCOUNTS", unexpiredAccounts)
 
-      //dealWith ExpiredAccounts
-      expiredAccounts.forEach(account=>{
-        //deal with each one
-      })
       //dealWith unexpiredAccounts
       unexpiredAccounts.forEach(account=>{
         //deal with each one
       })
+
+
+      //dealWith ExpiredAccounts
+      expiredAccounts.map((account)=>account._id)
+        .forEach((id)=> Accounts.update(id, {
+          $set: { expired: true }
+        }))
 
 
       // if(account.blockExpired <= tx.blockNumber) {

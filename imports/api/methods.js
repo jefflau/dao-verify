@@ -32,6 +32,9 @@ Meteor.methods({
       } else {
         throw new Meteor.Error("no-tokens", "This account has no tokens associated with it");
       }
-    }).catch((err)=>console.error(err));
+    }).catch((err)=> {
+      console.error(err)
+      throw err;
+    });
   }
 });
