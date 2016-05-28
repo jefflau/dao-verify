@@ -5,13 +5,16 @@ const APIToken = `YourApiKey`;
 import CONFIG from '../../config/config';
 
 function getAccountTransactions(account){
-  let transactionsPromise = httpPromise("GET", etherScanAPI, {
-    module: "account",
-    action: "txlist",
-    apikey: "YourApiKeyToken",
-    address: account,
-    sort: "desc"
-  }).then((res)=>{
+  let options = {
+    params: {
+      module: "account",
+      action: "txlist",
+      apikey: "YourApiKeyToken",
+      address: account,
+      sort: "desc"
+    }
+  }
+  let transactionsPromise = httpPromise("GET", etherScanAPI, options).then((res)=>{
       if(res.statusCode === 200) {
         return res.data.result
       } else {
@@ -23,11 +26,14 @@ function getAccountTransactions(account){
 }
 
 export function getCurrentBlockNumber(){
-  let blockNumberPromise = httpPromise("GET", etherScanAPI, {
-    module: "proxy",
-    action: "eth_blockNumber",
-    apikey: "YourApiKeyToken"
-  }).then((res)=>{
+  var options = {
+    params: {
+      module: "proxy",
+      action: "eth_blockNumber",
+      apikey: "YourApiKeyToken"
+    }
+  }
+  let blockNumberPromise = httpPromise("GET", etherScanAPI, options).then((res)=>{
       if(res.statusCode === 200) {
         return parseInt(res.data.result, 16)
       } else {
@@ -43,15 +49,16 @@ export function getControlAccountTransactions(){
 }
 
 export function checkDAOAccountExists(account){
-
-  let tokensPromise = httpPromise("GET", etherScanAPI,
-      {
-          module: 'account',
-          action: 'tokenbalance',
-          tokenname: 'thedao',
-          apikey: 'YourApiKey',
-          address: account
-      }
+  let options = {
+    params: {
+        module: 'account',
+        action: 'tokenbalance',
+        tokenname: 'thedao',
+        apikey: 'YourApiKey',
+        address: account
+    }
+  }
+  let tokensPromise = httpPromise("GET", etherScanAPI, options
     ).then((res)=>{
       if(res.data.status === "1") {
         var tokens = parseInt(res.data.result);

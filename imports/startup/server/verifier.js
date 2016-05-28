@@ -4,6 +4,8 @@ import CONFIG from '../../config/config';
 import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
 import discourseAPI from '../../api/server/discourseAPI';
 
+const { discourse } = CONFIG;
+
 class Verifier {
   constructor(){
     console.log('constructing verifier')
@@ -106,7 +108,6 @@ class Verifier {
         }
       });
 
-
       verifiedAccounts = this.processUnexpiredAccounts(unexpiredAccounts, relevantTxs);
       this.processExpiredAccounts(expiredAccounts)
 
@@ -120,7 +121,13 @@ class Verifier {
     console.log('starting verifier');
     //Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
 
-    discourseAPI.getUser('auryn_macmillan')
+    discourseAPI.getUserId('auryn_macmillan')
+      .then(userId => {
+        return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
+      })
+      .then(data => console.log(data))
+      .catch((err)=> console.log(error))
+
   }
 }
 

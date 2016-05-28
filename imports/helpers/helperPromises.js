@@ -1,14 +1,12 @@
 import { HTTP } from 'meteor/http';
 import '../api/methods.js';
 
-export function httpPromise(type, url, params){
+export function httpPromise(type, url, options){
   var promise = new Promise(http);
 
+  console.log(options)
   function http(resolve,reject){
-    HTTP.call(type, url,
-      {
-        params
-      }, function(err, res){
+    HTTP.call(type, url, options, function(err, res){
         if(err)
           reject(err)
         else {
