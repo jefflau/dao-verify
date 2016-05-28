@@ -19,20 +19,18 @@ Meteor.methods({
     ]).then((values)=>{
       let [tokens, currentBlockNumber] = values;
       if(tokens){
-        let userId = createAccount(form, currentBlockNumber);
-
-        if(userId){
-          return {
-            ...form,
-            tokens,
-            userId
-          }
-        }
-
+        return createAccount(form, currentBlockNumber);
       } else {
         throw new Meteor.Error("no-tokens", "This account has no tokens associated with it");
       }
-    }).catch((err)=> {
+    }).then((userId)=>{
+      return {
+        ...form,
+        tokens,
+        userId
+      }
+    })
+    .catch((err)=> {
       console.error(err)
       throw err;
     });

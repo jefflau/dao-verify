@@ -121,12 +121,14 @@ class Verifier {
     console.log('starting verifier');
     //Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
 
-    discourseAPI.getUserId('auryn_macmillan')
-      .then(userId => {
-        return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
-      })
-      .then(data => console.log(data))
-      .catch((err)=> console.log(error))
+    // discourseAPI.getUserId('auryn_macmillan')
+    //   .then(userId => {
+    //     return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
+    //   })
+    //   .catch((err)=> console.log(error))
+    //
+    // discourseAPI.grantBadge('auryn_macmillan', 100)
+    //   .then(data => console.log('GRANT BAD', data))
 
   }
 }

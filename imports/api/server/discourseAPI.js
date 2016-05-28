@@ -34,6 +34,44 @@ class discourseAPI {
 
     return httpPromise('PUT', url, options);
   }
+
+  grantBadge(username, badgeId){
+    let url = `${this.url}user_badges`;
+    let options = {
+      params: {
+        username: username,
+        badge_id: badgeId
+      },
+      query: this.defaultQuery
+    };
+
+    console.log('GRANT BADGE FUNC')
+
+    return httpPromise('POST', url, options);
+  }
+
+  checkUsernameExists(username){
+    return this.getUser(username).then(data=>{
+      console.log('inside then', data)
+      if(data.statusCode === 200){
+        return true;
+      }
+    }).catch(err=> {
+      console.log('inside error', err)
+      throw new Meteor.Error('username-not-found', "DAOhub forum username not found")
+    })
+  }
+
+  addCustomData(username, field, ) {
+    // let url = `${this.url}users/${userId}/trust_level`;
+    // let options = {
+    //   params: {
+    //     fields: {
+    //       'to
+    //     }
+    //   }
+    // }
+  }
 }
 
 const options = {
