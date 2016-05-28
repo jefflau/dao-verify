@@ -43,7 +43,7 @@ function mapDispatchToProps(dispatch){
   return {
     submitHandler: (form) => {
       dispatch(submitForm({
-        daoTokenAccount: form.daoTokenAccount.value,
+        daoTokenAccount: form.daoTokenAccount.value.toLowerCase(),
         daoHubForumUsername: form.daoHubForumUsername.value
       }))
     }

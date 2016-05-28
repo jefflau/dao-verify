@@ -12,7 +12,7 @@ function getAccountTransactions(account){
     address: account,
     sort: "desc"
   }).then((res)=>{
-      if(res.data.status === "1") {
+      if(res.statusCode === 200) {
         return res.data.result
       } else {
         throw new Meteor.Error("api-call-failed", "api call failed")

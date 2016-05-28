@@ -1,6 +1,8 @@
 import Accounts from '../../api/collections/accounts';
 import VerifierConfig from '../../api/collections/verifierConfig';
+import CONFIG from '../../config/config';
 import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
+import discourseAPI from '../../api/server/discourseAPI';
 
 class Verifier {
   constructor(){
@@ -21,7 +23,7 @@ class Verifier {
         dateCreated: new Date(),
         lastAccountVerified: null,
         latestBlock: null,
-        lastTransactionProcess: null
+        lastTransactionProcessed: null
       })
     });
   }
@@ -41,8 +43,43 @@ class Verifier {
     return relevantTxs;
   }
 
-  verifyAccounts(){
-    console.log('in verify accounts');
+  processExpiredAccounts(accounts){
+    console.log('Processing expired accounts');
+    accounts.map((account)=>account._id)
+      .forEach((id)=>
+        Accounts.update(id, {
+          $set: { expired: true }
+        })
+      )
+  }
+
+  processUnexpiredAccounts(accounts, relevantTxs){
+    console.log('Processing unexpired accounts', accounts);
+    var verifiedAccounts = new Set();
+    relevantTxs.forEach(tx=>{
+      accounts.forEach(account=>{
+        //Make sure that transaction was made after account was registered
+        if(tx.from === account.daoTokenAccount.toLowerCase() && tx.blockNumber > account.blockRegistered){
+          verifiedAccounts.add(account)
+        }
+      })
+    })
+
+    return Array.from(verifiedAccounts)
+  }
+
+  verifyAccounts(accounts){
+    console.log('Adding Verified accounts to DB', accounts)
+    accounts.map((account)=>account._id)
+      .forEach((id)=>
+        Accounts.update(id, {
+          $set: { verified: true }
+        })
+      )
+  }
+
+  checkAccounts(){
+    console.log('Check accounts loop');
     Promise.all([
       getControlAccountTransactions(),
       getCurrentBlockNumber()
@@ -51,6 +88,7 @@ class Verifier {
       let accounts = Accounts.find({verified: false, expired: false}).fetch();
       let txs = values[0];
       let currentBlockNumber = values[1];
+      let verifiedAccounts;
 
       //filter txs
       let relevantTxs = this.getRelevantTransactions(txs, currentBlockNumber);
@@ -68,43 +106,21 @@ class Verifier {
         }
       });
 
-      console.log("EXPIRED ACCOUNTS", expiredAccounts)
-      console.log("UNEXPIRED ACCOUNTS", unexpiredAccounts)
 
-      //dealWith unexpiredAccounts
-      unexpiredAccounts.forEach(account=>{
-        //deal with each one
-      })
+      verifiedAccounts = this.processUnexpiredAccounts(unexpiredAccounts, relevantTxs);
+      this.processExpiredAccounts(expiredAccounts)
 
+      console.log("Accounts to verify", verifiedAccounts)
+      this.verifyAccounts(verifiedAccounts)
 
-      //dealWith ExpiredAccounts
-      expiredAccounts.map((account)=>account._id)
-        .forEach((id)=> Accounts.update(id, {
-          $set: { expired: true }
-        }))
-
-
-      // if(account.blockExpired <= tx.blockNumber) {
-      //
-      // }
-      // relevantTxs.forEach((tx)=> {
-      //
-      //   if(tx.to === )
-      // })
     }).catch((err)=>console.error(err))
-    //loop through Accounts
-    //If createdBlockNumber > 100. Invalidate
-    // else loop through transactions array
-    // check each transaction with accountNumber
-    // if match, set verified to true
-    // if not continue looping
-    // loop through transactions until currentBlockNumber + 100
-    //check
   }
 
   start() {
     console.log('starting verifier');
-    this.verifyAccounts();
+    //Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
+
+    discourseAPI.getUser('auryn_macmillan')
   }
 }
 
