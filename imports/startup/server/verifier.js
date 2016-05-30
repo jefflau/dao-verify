@@ -136,7 +136,6 @@ class Verifier {
   start() {
     console.log('starting verifier');
     Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
-
   }
 }
 

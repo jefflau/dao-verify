@@ -9,7 +9,9 @@ import  { submitForm } from '../../actions/actions';
 
 class Home extends Component {
   render(){
-    let { form, submitHandler, tokens, accountMeteor, serverError} = this.props;
+    let { form, submitHandler, tokens, accountMeteor, serverError, config} = this.props;
+
+    console.log(config)
     return (
       <div>
         {serverError.error ? <div>{serverError.error.reason}</div> : "" }
