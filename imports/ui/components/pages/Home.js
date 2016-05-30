@@ -13,7 +13,7 @@ class Home extends Component {
     return (
       <div>
         {serverError.error ? <div>{serverError.error.reason}</div> : "" }
-        {tokens ? <div>{tokens} token found. Please send 1 wei to this address</div> : "" }
+        {tokens ? <div>{tokens} token found. Please send 1 wei to this address: {config.verifierAddress}</div> : "" }
         <VerifyForm onSubmit={submitHandler.bind(null, form)} />
       </div>
     )
@@ -35,7 +35,8 @@ function mapStateToProps(state){
     form: state.form.verifyForm,
     tokens: state.account.tokens,
     account: state.account,
-    serverError: state.serverError
+    serverError: state.serverError,
+    config: state.config
   }
 }
 

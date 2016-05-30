@@ -1,7 +1,7 @@
 import { httpPromise } from '../../helpers/helperPromises';
 const etherScanAPI = `https://api.etherscan.io/api?`;
 const APIToken = `YourApiKey`;
-import CONFIG from '../../config/config';
+import CONFIG from '../../startup/server/config';
 
 function getAccountTransactions(account){
   let options = {

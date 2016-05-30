@@ -1,6 +1,6 @@
 import Accounts from '../../api/collections/accounts';
 import VerifierConfig from '../../api/collections/verifierConfig';
-import CONFIG from '../../config/config';
+import CONFIG from './config';
 import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
 import discourseAPI from '../../api/server/discourseAPI';
 
@@ -12,8 +12,6 @@ class Verifier {
     if(VerifierConfig.find().count() === 0){
       this.setupVerifier()
     }
-    console.log(VerifierConfig.find().fetch());
-    console.log(Accounts.find().fetch());
   }
 
   setupVerifier(){
@@ -70,18 +68,36 @@ class Verifier {
     return Array.from(verifiedAccounts)
   }
 
+  updateDiscourse(account){
+      console.log("Updating Discourse account for ", account.daoHubForumUsername);
+      let { daoHubForumUsername } = account;
+      let p1 = discourseAPI.getUserId(daoHubForumUsername)
+        .then(userId => {
+          return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
+        });
+
+      let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
+
+      Promise.all([p1, p2]).then(()=>{
+        Accounts.update(account._id, {
+          $set: {
+            "daoHubForum.DTHBadge": true,
+            "daoHubForum.trustLevel": discourse.tokenHolderLevel
+          }
+        })
+      }).catch((err)=> console.log(error));
+  }
+
   verifyAccounts(accounts){
     console.log('Adding Verified accounts to DB', accounts)
-    accounts.map((account)=>account._id)
-      .forEach((id)=>
-        Accounts.update(id, {
-          $set: { verified: true }
-        })
-      )
+    accounts.forEach((account)=>
+      Accounts.update(account._id, {
+        $set: { verified: true }
+      }, ()=>{ this.updateDiscourse(account)})
+    )
   }
 
   checkAccounts(){
-    console.log('Check accounts loop');
     Promise.all([
       getControlAccountTransactions(),
       getCurrentBlockNumber()
@@ -119,16 +135,7 @@ class Verifier {
 
   start() {
     console.log('starting verifier');
-    //Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
-
-    // discourseAPI.getUserId('auryn_macmillan')
-    //   .then(userId => {
-    //     return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
-    //   })
-    //   .catch((err)=> console.log(error))
-    //
-    // discourseAPI.grantBadge('auryn_macmillan', 100)
-    //   .then(data => console.log('GRANT BAD', data))
+    Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
 
   }
 }

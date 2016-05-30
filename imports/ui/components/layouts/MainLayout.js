@@ -1,8 +1,18 @@
 import React from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
+import { connect } from 'react-redux';
+import { getConfig } from '../../actions/actions';
 
-export default class Main extends React.Component {
+class Main extends React.Component {
+  fetchConfig(dispatch) {
+    dispatch(getConfig());
+  }
+  componentWillMount(){
+    const { dispatch } = this.props;
+
+    this.fetchConfig(dispatch);
+  }
   render(){
     return (
       <main className="main-container">
@@ -13,3 +23,5 @@ export default class Main extends React.Component {
     )
   }
 }
+
+export default connect()(Main)

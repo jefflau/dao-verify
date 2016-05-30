@@ -4,7 +4,8 @@ const CONFIG = {
     apiKey: `4eb63ee7853c16646df8e2a8dd8651ce4c03b8392332a938aea0057534afc54c`,
     url: `http://testforum.daohub.org/`,
     apiUsername: `discoursedev`,
-    tokenHolderLevel: 3
+    tokenHolderLevel: 3,
+    DTHBadgeId: 100
   },
   amountofBlocksToWait: 50
 }

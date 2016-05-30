@@ -4,7 +4,7 @@ import store from '../../store';
 function tokensFound(tokens){
   return {
     type: 'TOKENS_FOUND',
-    tokens: tokens
+    tokens
   }
 }
 
@@ -28,6 +28,13 @@ function clearError() {
   }
 }
 
+function updateConfig(config){
+  return {
+    type: 'UPDATE_CONFIG',
+    config
+  }
+}
+
 
 export function submitForm(form){
   return (dispatch) => {
@@ -38,6 +45,14 @@ export function submitForm(form){
       return data.tokens;
     }).catch((err)=>{
       dispatch(serverError(err));
+    })
+  }
+}
+
+export function getConfig(){
+  return (dispatch) => {
+    callMethodPromise('getConfig').then((config)=>{
+      dispatch(updateConfig(config))
     })
   }
 }

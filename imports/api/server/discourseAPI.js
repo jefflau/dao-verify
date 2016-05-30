@@ -1,4 +1,4 @@
-import CONFIG from '../../config/config';
+import CONFIG from '../../startup/server/config';
 import { httpPromise } from '../../helpers/helperPromises';
 
 class discourseAPI {
