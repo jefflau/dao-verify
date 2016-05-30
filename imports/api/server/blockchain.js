@@ -1,4 +1,3 @@
-import { Web3 } from 'meteor/ethereum:web3';
 import { httpPromise } from '../../helpers/helperPromises';
 const etherScanAPI = `https://api.etherscan.io/api?`;
 const APIToken = `YourApiKey`;
