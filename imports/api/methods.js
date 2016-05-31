@@ -3,6 +3,7 @@ import Accounts, { createAccount } from './collections/accounts';
 if(Meteor.isServer){
   var { checkDAOAccountExists, getCurrentBlockNumber } = require('./server/blockchain');
   var CONFIG = require('../startup/server/config').default;
+  var discourseAPI = require('./server/discourseAPI').default;
 
 }
 
@@ -26,12 +27,14 @@ Meteor.methods({
 
     return new Promise.all([
       checkDAOAccountExists(tokenAccount),
-      getCurrentBlockNumber()
+      getCurrentBlockNumber(),
+      discourseAPI.checkUsernameExists(form.daoHubForumUsername)
     ]).then((values)=>{
       let [tokens, currentBlockNumber] = values;
       console.log(values);
       if(tokens){
         let userId = createAccount(form, currentBlockNumber, tokens);
+
         return {
           tokens,
           userId

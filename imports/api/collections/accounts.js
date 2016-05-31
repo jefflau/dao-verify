@@ -2,8 +2,6 @@ const Accounts = new Mongo.Collection('accounts');
 
 if(Meteor.isServer){
   var CONFIG = require('../../startup/server/config').default;
-  var discourseAPI = require('../server/discourseAPI').default;
-  console.log(discourseAPI)
 }
 
 export function getAllUnverified(){
@@ -28,19 +26,17 @@ export function createAccount(form, currentBlockNumber, tokens){
     throw new Meteor.Error("dao-account-pending-approval", "This DAOhub forum username is pending approval. If you made this request please make a 1 wei transaction to " + CONFIG.verifierAddress);
   }
 
-  return discourseAPI.checkUsernameExists(form.daoHubForumUsername).then(()=>{
-    return Accounts.insert({
-      ...form,
-      tokens,
-      verified: false,
-      expired: false,
-      blockExpiry: currentBlockNumber + 100,
-      blockRegistered: currentBlockNumber,
-      daoHubForum: {
-        DTHBadge: false,
-        trustLevel: 0
-      }
-    });
+  return Accounts.insert({
+    ...form,
+    tokens,
+    verified: false,
+    expired: false,
+    blockExpiry: currentBlockNumber + 100,
+    blockRegistered: currentBlockNumber,
+    daoHubForum: {
+      DTHBadge: false,
+      trustLevel: 0
+    }
   }).catch(err=> { console.log(err); throw err})
 }
 
