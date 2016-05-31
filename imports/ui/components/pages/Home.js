@@ -10,12 +10,15 @@ import  { submitForm } from '../../actions/actions';
 class Home extends Component {
   render(){
     let { form, submitHandler, tokens, accountMeteor, serverError, config} = this.props;
-
+    var intro = <div className="intro">Enter your DAO Token Account and your DAOHub Forum username to link them together</div>
     console.log(config)
     return (
-      <div>
-        {serverError.error ? <div>{serverError.error.reason}</div> : "" }
-        {tokens ? <div>{tokens} token found. Please send 1 wei to this address: {config.verifierAddress}</div> : "" }
+      <div className="home">
+        <div className="notifier">
+          {!serverError.error && !tokens && intro}
+          {serverError.error ? <div className="server-error">{serverError.error.reason}</div> : "" }
+          {tokens ? <div>{tokens} token found. Please send 1 wei to this address: {config.verifierAddress}</div> : "" }
+        </div>
         <VerifyForm onSubmit={submitHandler.bind(null, form)} />
       </div>
     )

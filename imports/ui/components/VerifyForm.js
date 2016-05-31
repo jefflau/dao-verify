@@ -22,24 +22,22 @@ class VerifyForm extends Component {
       handleSubmit,
       submitting
       } = this.props
+
+    let daoHubForumUsernameError = daoHubForumUsername.error ? <div className="forum-username-error error">{daoHubForumUsername.error}</div>: null;
     return (<form onSubmit={handleSubmit}>
-        <div>
+        <div className="input-group">
           <label>Daohub Token Account</label>
-          <div>
-            <input type="text" placeholder="First Name" {...daoTokenAccount}/>
-          </div>
-          {daoTokenAccount.touched && daoTokenAccount.error && <div>{daoTokenAccount.error}</div>}
+          <input type="text" placeholder="0x..." {...daoTokenAccount}/>
+          {daoTokenAccount.touched && daoTokenAccount.error && <div className="token-account-error error">{daoTokenAccount.error}</div>}
         </div>
-        <div>
+        <div className="input-group">
           <label>DaoHub Forum Username</label>
-          <div>
-            <input type="text" placeholder="Last Name" {...daoHubForumUsername}/>
-          </div>
-          {daoHubForumUsername.touched && daoHubForumUsername.error && <div>{daoHubForumUsername.error}</div>}
+          <input type="text" placeholder="DAOHub forum username" {...daoHubForumUsername}/>
+          {daoHubForumUsername.touched && daoHubForumUsername.error && <div className="forum-username-error error">{daoHubForumUsername.error}</div>}
         </div>
         <div>
           <button type="submit" disabled={submitting}>
-            {submitting ? <i/> : <i/>} Submit
+            {submitting ? <i/> : <i/>} Link Accounts
           </button>
         </div>
       </form>
