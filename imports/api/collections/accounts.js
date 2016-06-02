@@ -18,8 +18,13 @@ export function createAccount(form, currentBlockNumber, tokens){
     throw new Meteor.Error("account-already-registered", "This account already has a DAOhub user associated with it");;
   }
 
-  if(Accounts.find({daoHubForumUsername: form.daoHubForumUsername, verified: true}).count() > 0) {
-    throw new Meteor.Error("dao-account-already-registered", "This DAOhub forum username has already been registered");;
+  var existingAccount = Accounts.find({daoHubForumUsername: form.daoHubForumUsername, verified: true}).fetch();
+
+  if(existingAccount.length > 0) {
+    let tokenAddress = existingAccount.tokenAddresses.push(form.daoTokenAccount);
+    return Accounts.update(existingAccount.id, $set: {
+      tokenAddresses: tokenAddresses
+    };
   }
 
   if(Accounts.find({daoHubForumUsername: form.daoHubForumUsername, verified: false, expired: false}).count() > 0) {
@@ -28,11 +33,7 @@ export function createAccount(form, currentBlockNumber, tokens){
 
   return Accounts.insert({
     ...form,
-    tokens,
-    verified: false,
-    expired: false,
-    blockExpiry: currentBlockNumber + 100,
-    blockRegistered: currentBlockNumber,
+    tokenAddresses: [form.tokenAddresses]
     daoHubForum: {
       DTHGroup: false
     }
