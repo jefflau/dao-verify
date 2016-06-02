@@ -17,7 +17,7 @@ class Home extends Component {
         <div className="notifier">
           {!serverError.error && !tokens && intro}
           {serverError.error ? <div className="server-error">{serverError.error.reason}</div> : "" }
-          {tokens ? <div>{tokens} token found. Please send 1 wei to this address: {config.verifierAddress}</div> : "" }
+          {!serverError.error && tokens ? <div>{tokens} token found. Please send 1 wei to this address: {config.verifierAddress}</div> : "" }
         </div>
         <VerifyForm onSubmit={submitHandler.bind(null, form)} />
       </div>

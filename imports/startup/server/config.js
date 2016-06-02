@@ -5,7 +5,8 @@ const CONFIG = {
     url: `http://testforum.daohub.org/`,
     apiUsername: `discoursedev`,
     tokenHolderLevel: 2,
-    DTHBadgeId: 100
+    DTHBadgeId: 100,
+    DTHGroupId: 41
   },
   amountofBlocksToWait: 50
 }

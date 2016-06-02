@@ -73,16 +73,15 @@ class Verifier {
       let { daoHubForumUsername } = account;
       let p1 = discourseAPI.getUserId(daoHubForumUsername)
         .then(userId => {
-          return discourseAPI.updateUserTrustLevel(userId, discourse.tokenHolderLevel)
+          return discourseAPI.addUserToGroup(userId, CONFIG.discourse.DTHGroupId)
         });
 
-      let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
+      //let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
 
-      Promise.all([p1, p2]).then(()=>{
+      Promise.all([p1]).then(()=>{
         Accounts.update(account._id, {
           $set: {
-            "daoHubForum.DTHBadge": true,
-            "daoHubForum.trustLevel": discourse.tokenHolderLevel
+            "daoHubForum.DTHGroup": true
           }
         })
       }).catch((err)=> console.log(error));

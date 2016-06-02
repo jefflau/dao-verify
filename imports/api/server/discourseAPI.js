@@ -50,6 +50,20 @@ class discourseAPI {
     return httpPromise('POST', url, options);
   }
 
+  addUserToGroup(userId, groupId){
+    let url = `${this.url}admin/users/${userId}/groups`;
+    let options = {
+      params: {
+        group_id: groupId
+      },
+      query: this.defaultQuery
+    }
+
+    console.log(url)
+
+    return httpPromise('POST', url, options);
+  }
+
   checkUsernameExists(username){
     return this.getUser(username).then(data=>{
       console.log('inside then', data)
@@ -61,6 +75,8 @@ class discourseAPI {
       throw new Meteor.Error('username-not-found', "DAOhub forum username not found")
     })
   }
+
+
 
   addCustomData(username, field, ) {
     // let url = `${this.url}users/${userId}/trust_level`;

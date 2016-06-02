@@ -11,7 +11,7 @@ export function getAllUnverified(){
 export function createAccount(form, currentBlockNumber, tokens){
 
   if(Accounts.find({daoTokenAccount: form.daoTokenAccount, verified: false, expired: false}).count() > 0) {
-    throw new Meteor.Error("account-pending-approval", "This account is pending approval. If you made this request please make the 1 wei transaction to");;
+    throw new Meteor.Error("account-pending-approval", `This account is pending approval. If you made this request please make the 1 wei transaction to ${CONFIG.verifierAddress}`);;
   }
 
   if(Accounts.find({daoTokenAccount: form.daoTokenAccount, verified: true}).count() > 0) {
@@ -34,10 +34,9 @@ export function createAccount(form, currentBlockNumber, tokens){
     blockExpiry: currentBlockNumber + 100,
     blockRegistered: currentBlockNumber,
     daoHubForum: {
-      DTHBadge: false,
-      trustLevel: 0
+      DTHGroup: false
     }
-  }).catch(err=> { console.log(err); throw err})
+  })
 }
 
 export default Accounts;
