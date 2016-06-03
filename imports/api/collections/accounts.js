@@ -34,7 +34,8 @@ export function createAccount(form, currentBlockNumber, tokens){
     blockExpiry: currentBlockNumber + 100,
     blockRegistered: currentBlockNumber,
     daoHubForum: {
-      DTHGroup: false
+      DTHGroup: false,
+      DTHBadge: false
     }
   })
 }

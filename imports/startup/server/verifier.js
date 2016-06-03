@@ -76,12 +76,13 @@ class Verifier {
           return discourseAPI.addUserToGroup(userId, CONFIG.discourse.DTHGroupId)
         });
 
-      //let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
+      let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
 
-      Promise.all([p1]).then(()=>{
+      Promise.all([p1, p2]).then(()=>{
         Accounts.update(account._id, {
           $set: {
-            "daoHubForum.DTHGroup": true
+            "daoHubForum.DTHGroup": true,
+            "daoHubForum.DTHBadge": true
           }
         })
       }).catch((err)=> console.log(error));
