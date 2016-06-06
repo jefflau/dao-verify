@@ -43,7 +43,8 @@ export function createAccount(form, currentBlockNumber, tokens){
     tokenAddresses: [],
     verified: false,
     daoHubForum: {
-      DTHGroup: false
+      DTHGroup: false,
+      DTHBadge: false
     }
   });
 
