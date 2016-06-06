@@ -1,4 +1,5 @@
-import Accounts from '../../api/collections/accounts';
+import DAOAccounts, { verifyDaoAccount } from '../../api/collections/daoAccounts';
+import TokenAddresses from '../../api/collections/tokenAddresses';
 import VerifierConfig from '../../api/collections/verifierConfig';
 import CONFIG from './config';
 import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
@@ -39,38 +40,36 @@ class Verifier {
       }
     }
 
-    console.log("RELEVANT TX: ", relevantTxs);
+    // console.log("RELEVANT TX: ", relevantTxs);
     return relevantTxs;
   }
 
-  processExpiredAccounts(accounts){
-    console.log('Processing expired accounts');
-    accounts.map((account)=>account._id)
+  processExpiredAddresses(addresses){
+    console.log('Processing expired addresses');
+    addresses.map((address)=>address._id)
       .forEach((id)=>
-        Accounts.update(id, {
-          $set: { expired: true }
-        })
+        TokenAddresses.remove(id)
       )
   }
 
-  processUnexpiredAccounts(accounts, relevantTxs){
-    console.log('Processing unexpired accounts', accounts);
-    var verifiedAccounts = new Set();
+  processUnexpiredAddresses(addresses, relevantTxs){
+    console.log('Processing unexpired accounts', addresses);
+    let verifiedAddresses = new Set();
     relevantTxs.forEach(tx=>{
-      accounts.forEach(account=>{
+      addresses.forEach(address=>{
         //Make sure that transaction was made after account was registered
-        if(tx.from === account.daoTokenAccount.toLowerCase() && tx.blockNumber > account.blockRegistered){
-          verifiedAccounts.add(account)
+        if(tx.from === address.address.toLowerCase() && tx.blockNumber > address.blockRegistered){
+          verifiedAddresses.add(address)
         }
       })
     })
 
-    return Array.from(verifiedAccounts)
+    return Array.from(verifiedAddresses)
   }
 
-  updateDiscourse(account){
-      console.log("Updating Discourse account for ", account.daoHubForumUsername);
-      let { daoHubForumUsername } = account;
+  updateDiscourse(tokenAddress){
+      let daoHubForumUsername = DAOAccounts.findOne(tokenAddress.daoAccountId).daoHubForumUsername;
+      console.log("Updating Discourse account for ", daoHubForumUsername);
       let p1 = discourseAPI.getUserId(daoHubForumUsername)
         .then(userId => {
           return discourseAPI.addUserToGroup(userId, CONFIG.discourse.DTHGroupId)
@@ -79,7 +78,7 @@ class Verifier {
       //let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
 
       Promise.all([p1]).then(()=>{
-        Accounts.update(account._id, {
+        DAOAccounts.update(tokenAddress.daoAccountId, {
           $set: {
             "daoHubForum.DTHGroup": true
           }
@@ -87,12 +86,26 @@ class Verifier {
       }).catch((err)=> console.log(error));
   }
 
-  verifyAccounts(accounts){
-    console.log('Adding Verified accounts to DB', accounts)
-    accounts.forEach((account)=>
-      Accounts.update(account._id, {
+  updateDaoAccounts(tokenAddress){
+    DAOAccounts.update(tokenAddress.daoAccountId, {
+      $addToSet: {
+        tokenAddresses: tokenAddress.address
+      },
+      $set: {
+        verified: true
+      }
+    })
+  }
+
+  verifyAccounts(addresses){
+    console.log('Verifying accounts and updating discourse for these addresses:', addresses)
+    addresses.forEach((address)=>
+      TokenAddresses.update(address._id, {
         $set: { verified: true }
-      }, ()=>{ this.updateDiscourse(account)})
+      }, ()=>{
+        this.updateDiscourse(address)
+        this.updateDaoAccounts(address)
+      })
     )
   }
 
@@ -101,33 +114,35 @@ class Verifier {
       getControlAccountTransactions(),
       getCurrentBlockNumber()
     ]).then(values => {
-      let allAccounts = Accounts.find({}).fetch();
-      let accounts = Accounts.find({verified: false, expired: false}).fetch();
+      let allTokenAddresses = TokenAddresses.find({}).fetch();
+      let tokenAddresses = TokenAddresses.find({verified: false, expired: false}).fetch();
       let txs = values[0];
       let currentBlockNumber = values[1];
-      let verifiedAccounts;
+      let verifiedAddresses;
 
       //filter txs
       let relevantTxs = this.getRelevantTransactions(txs, currentBlockNumber);
 
-      let expiredAccounts = [];
-      let unexpiredAccounts = [];
-      console.log("ALL ACCOUNTS", allAccounts);
-      console.log("accounts", accounts);
+      let expiredAddresses = [];
+      let unexpiredAddresses = [];
+      console.log("ALL tokenAddresses", allTokenAddresses);
+      console.log("unverified tokenAddresses", tokenAddresses);
+      console.log("currentBlockNumber", currentBlockNumber)
 
-      accounts.forEach((account)=>{
-        if(account.expiryBlock > currentBlockNumber) {
-          expiredAccounts.push(account)
+      tokenAddresses.forEach((address)=>{
+        if(currentBlockNumber > address.expiryBlock) {
+          expiredAddresses.push(address)
         } else {
-          unexpiredAccounts.push(account);
+          unexpiredAddresses.push(address);
         }
       });
 
-      verifiedAccounts = this.processUnexpiredAccounts(unexpiredAccounts, relevantTxs);
-      this.processExpiredAccounts(expiredAccounts)
+      verifiedAddresses = this.processUnexpiredAddresses(unexpiredAddresses, relevantTxs);
+      this.processExpiredAddresses(expiredAddresses)
 
-      console.log("Accounts to verify", verifiedAccounts)
-      this.verifyAccounts(verifiedAccounts)
+      if(verifiedAddresses.length > 0){
+        this.verifyAccounts(verifiedAddresses)
+      }
 
     }).catch((err)=>console.error(err))
   }

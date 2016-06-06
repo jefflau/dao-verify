@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';;
 import { createContainer } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 
-import Accounts from '../../../api/collections/accounts';
+import DAOAccounts from '../../../api/collections/daoAccounts';
 import VerifyForm from '../VerifyForm';
 import  { submitForm } from '../../actions/actions';
 
@@ -30,7 +30,7 @@ const HomeContainer = createContainer(({ account })=>{
   const accountLoading = !accountSub.ready();
   return {
     accountLoading,
-    accountMeteor: Accounts.find({}).fetch()
+    accountMeteor: DAOAccounts.find({}).fetch()
   }
 }, Home);
 
