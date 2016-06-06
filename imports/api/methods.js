@@ -1,4 +1,4 @@
-import Accounts, { createAccount } from './collections/accounts';
+import { createAccount } from './collections/daoAccounts';
 
 if(Meteor.isServer){
   var { checkDAOAccountExists, getCurrentBlockNumber } = require('./server/blockchain');
