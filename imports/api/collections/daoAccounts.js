@@ -5,14 +5,28 @@ if(Meteor.isServer){
   var CONFIG = require('../../startup/server/config').default;
 }
 
-export function getAllUnverified(){
-  return DAOAccounts.find({verified: false})
+export function recordDiscourseUpdate(id){
+  return DAOAccounts.update(id, {
+    $set: {
+      "daoHubForum.DTHGroup": true,
+      "daoHubForum.DTHBadge": true
+    }
+  })
 }
 
-export function verifyDaoAccount(id){
-  DAOAccounts.update(id, { $set: {
-    verified: true
-  }})
+export function addAddressToAccount(tokenAddress){
+  return DAOAccounts.update(tokenAddress.daoAccountId, {
+    $addToSet: {
+      tokenAddresses: tokenAddress.address
+    },
+    $set: {
+      verified: true
+    }
+  })
+}
+
+export function getForumUsername(id){
+  return DAOAccounts.findOne(id).daoHubForumUsername;
 }
 
 export function createAccount(form, currentBlockNumber, tokens){

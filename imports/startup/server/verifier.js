@@ -1,4 +1,8 @@
-import DAOAccounts, { verifyDaoAccount } from '../../api/collections/daoAccounts';
+import {
+  recordDiscourseUpdate,
+  addAddressToAccount,
+  getForumUsername
+} from '../../api/collections/daoAccounts';
 import TokenAddresses from '../../api/collections/tokenAddresses';
 import VerifierConfig from '../../api/collections/verifierConfig';
 import CONFIG from './config';
@@ -68,7 +72,7 @@ class Verifier {
   }
 
   updateDiscourse(tokenAddress){
-      let daoHubForumUsername = DAOAccounts.findOne(tokenAddress.daoAccountId).daoHubForumUsername;
+      let daoHubForumUsername = getForumUsername(tokenAddress.daoAccountId);
       console.log("Updating Discourse account for ", daoHubForumUsername);
       let p1 = discourseAPI.getUserId(daoHubForumUsername)
         .then(userId => {
@@ -78,24 +82,8 @@ class Verifier {
       let p2 = discourseAPI.grantBadge(daoHubForumUsername, 100)
 
       Promise.all([p1, p2]).then(()=>{
-        DAOAccounts.update(tokenAddress.daoAccountId, {
-          $set: {
-            "daoHubForum.DTHGroup": true,
-            "daoHubForum.DTHBadge": true
-          }
-        })
+        recordDiscourseUpdate(tokenAddress.daoAccountId);
       }).catch((err)=> console.log(error));
-  }
-
-  updateDaoAccounts(tokenAddress){
-    DAOAccounts.update(tokenAddress.daoAccountId, {
-      $addToSet: {
-        tokenAddresses: tokenAddress.address
-      },
-      $set: {
-        verified: true
-      }
-    })
   }
 
   verifyAccounts(addresses){
@@ -105,7 +93,7 @@ class Verifier {
         $set: { verified: true }
       }, ()=>{
         this.updateDiscourse(address)
-        this.updateDaoAccounts(address)
+        addAddressToAccount(address)
       })
     )
   }
