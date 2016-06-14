@@ -154,7 +154,7 @@ class Verifier {
 
     Promise.all(tokenPromises).then(values => {
       values.forEach((tokens, i) => {
-        if(tokens === false){
+        if(tokens === false || tokens === 0){
           //getForumUsername
           let daoAccountId = verifiedAddresses[i].daoAccountId;
           let daoHubForumUsername = getForumUsername(daoAccountId);
