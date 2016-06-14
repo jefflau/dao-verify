@@ -1,12 +1,15 @@
 import {
   recordDiscourseUpdate,
   addAddressToAccount,
-  getForumUsername
-} from '../../api/collections/daoAccounts';
+  getForumUsername } from '../../api/collections/daoAccounts';
 import TokenAddresses from '../../api/collections/tokenAddresses';
 import VerifierConfig from '../../api/collections/verifierConfig';
 import CONFIG from './config';
-import { getCurrentBlockNumber, getControlAccountTransactions, getAccountTransactions } from '../../api/server/blockchain';
+import {
+  getCurrentBlockNumber,
+  getControlAccountTransactions,
+  getAccountTransactions,
+  checkDAOAccountExists } from '../../api/server/blockchain';
 import discourseAPI from '../../api/server/discourseAPI';
 
 const { discourse } = CONFIG;
@@ -98,7 +101,8 @@ class Verifier {
     )
   }
 
-  checkAccounts(){
+  checkUnverifiedAddresses(){
+    console.log('here')
     Promise.all([
       getControlAccountTransactions(),
       getCurrentBlockNumber()
@@ -136,9 +140,74 @@ class Verifier {
     }).catch((err)=>console.error(err))
   }
 
+  checkVerifiedAddresses(){
+    //get all verified accounts
+    let verifiedAddresses = TokenAddresses.find({verified: true, expired: false}).fetch();
+    //check if they still have tokens
+    //console.log(verifiedAddresses)
+
+    var tokenPromises = verifiedAddresses.map(address => {
+      return checkDAOAccountExists(address.address);
+    })
+
+    console.log("TOKEN PROMISES", tokenPromises);
+
+    Promise.all(tokenPromises).then(values => {
+      values.forEach((tokens, i) => {
+        if(tokens === false){
+          //getForumUsername
+          let daoAccountId = verifiedAddresses[i].daoAccountId;
+          let daoHubForumUsername = getForumUsername(daoAccountId);
+
+          console.log("daoAccountId", daoAccountId);
+          console.log("daoHubForumUsername", daoHubForumUsername);
+
+          let p1 = discourseAPI.getUserId(daoHubForumUsername)
+            .then(id => discourseAPI.removeUserFromGroup(id , CONFIG.discourse.DTHGroupId))
+            .then(data=>console.log(data))
+            .catch(err=>console.log(err));
+
+          let p2 = discourseAPI.removeBadgeFromUser(CONFIG.discourse.DTHBadgeId, daoHubForumUsername)
+            .then(data=>console.log(data))
+            .catch(err=>console.log(err));
+
+          Promise.all([p1, p2]).then(values =>{
+            //delete user
+            //delete token address
+            TokenAddresses.remove(verifiedAddresses[i]._id);
+            let daoAccount = DAOAccounts.findOne(daoAccountId);
+            if(daoAccount.tokens.length === 1 ){
+              DAOAccounts.remove(verifiedAddresses[i]._id)
+            } else {
+              let updatedTokens = daoAccount.tokenAddresses.filter(address=>verifiedAddresses[i].address !== address);
+              DAOAccounts.update(daoAccountId, {
+                $set: {
+                  tokenAddresses: updatedTokens
+                }
+              })
+            }
+          })
+        } else if(tokens !== verifiedAddresses[i].tokens){
+          //Update token amount
+          TokenAddresses.update(verifiedAddresses[i]._id, {
+            $set: { tokens }
+          })
+        } else {
+          console.log(tokens);
+          console.log("tokens are correct");
+        }
+      })
+    })
+    //if token number is different, change amount of tokens
+    //add those that don't to an array
+    //forEach item in array remove discourseAPI.removeGroup/removeBadge(username)
+  }
+
   start() {
     console.log('starting verifier');
-    Meteor.setInterval(()=>this.checkAccounts(), 15 * 1000);
+    Meteor.setInterval(()=>this.checkUnverifiedAddresses(), 15 * 1000);
+    Meteor.setInterval(()=>this.checkVerifiedAddresses(), 15 * 1000);
+
   }
 }
 

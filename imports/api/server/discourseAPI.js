@@ -64,6 +64,47 @@ class discourseAPI {
     return httpPromise('POST', url, options);
   }
 
+  removeUserFromGroup(userId, groupId){
+    let url = `${this.url}groups/${groupId}/members.json`
+    let options = {
+      params: {
+        user_id: userId
+      },
+      query: this.defaultQuery
+    }
+
+    return httpPromise('DELETE', url, options);
+  }
+
+  getUserBadges(username){
+    let url = `${this.url}/user-badges/${username}.json`;
+
+    let options = {
+      query: this.defaultQuery
+    }
+
+    return httpPromise('GET', url, options);
+  }
+
+  getUserBadgeId(badgeId, userBadges){
+    return userBadges.filter((badge)=>badge.badge_id === badgeId)[0].id;
+  }
+
+  removeBadgeFromUser(badgeId, username){
+    return this.getUserBadges(username).then((res)=>{
+      let userBadgeId = this.getUserBadgeId(badgeId, res.data.user_badges);
+
+      console.log(userBadgeId)
+      let url = `${this.url}user_badges/${userBadgeId}`;
+
+      let options = {
+        query: this.defaultQuery
+      }
+
+      return httpPromise('DELETE', url, options);
+    });
+  }
+
   checkUsernameExists(username){
     return this.getUser(username).then(data=>{
       console.log('inside then', data)
@@ -76,18 +117,6 @@ class discourseAPI {
     })
   }
 
-
-
-  addCustomData(username, field, ) {
-    // let url = `${this.url}users/${userId}/trust_level`;
-    // let options = {
-    //   params: {
-    //     fields: {
-    //       'to
-    //     }
-    //   }
-    // }
-  }
 }
 
 const options = {
