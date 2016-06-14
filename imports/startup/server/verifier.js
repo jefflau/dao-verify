@@ -23,7 +23,7 @@ class Verifier {
   }
 
   setupVerifier(){
-    console.log('setting up verified');
+    console.log('setting up verifier');
     getCurrentBlockNumber().then((blockNumber)=> {
       VerifierConfig.insert({
         firstBlock: blockNumber,
@@ -198,15 +198,12 @@ class Verifier {
         }
       })
     })
-    //if token number is different, change amount of tokens
-    //add those that don't to an array
-    //forEach item in array remove discourseAPI.removeGroup/removeBadge(username)
   }
 
   start() {
     console.log('starting verifier');
-    Meteor.setInterval(()=>this.checkUnverifiedAddresses(), 15 * 1000);
-    Meteor.setInterval(()=>this.checkVerifiedAddresses(), 15 * 1000);
+    let unverifiedInterval = Meteor.setInterval(()=>this.checkUnverifiedAddresses(), 15 * 1000);
+    let verifiedInterval = Meteor.setInterval(()=>this.checkVerifiedAddresses(), 15 * 1000);
 
   }
 }
